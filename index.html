@@ -1,35 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FIFA Draft</title>
+
   <style>
     body {
-      background:#0f172a;
-      color:white;
-      font-family:sans-serif;
-      text-align:center;
-      margin:0;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      user-select: none;
     }
-    h2 { margin: 12px 0; }
+
+    h2 {
+      margin-top: 20px;
+    }
+
     .pack, .team {
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
-      padding:10px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px;
+      flex-wrap: wrap;
     }
+
     img {
-      width:90px;
-      border-radius:10px;
-      cursor:pointer;
+      width: 100px;
+      height: auto;
+      border-radius: 10px;
+      cursor: pointer;
     }
-    .selected { opacity:0.4; }
+
     .slot {
-      width:90px;
-      height:140px;
-      border:2px dashed #64748b;
-      border-radius:10px;
+      width: 100px;
+      height: 150px;
+      border: 2px dashed #555;
+      border-radius: 10px;
     }
   </style>
 </head>
@@ -43,28 +50,22 @@
 <div class="team" id="team"></div>
 
 <script>
-  // 🔴 ADD YOUR CARD FILE NAMES HERE
-  const cards = [
-    const allCards = [
-  "fifa-cards/Vieira.png",
-  "fifa-cards/Vieira1.png",
-  "fifa-cards/Vieira2.png",
-  "fifa-cards/Vieira4.png",
-
-  "fifa-cards/Marcelo.png",
-  "fifa-cards/Marcelo1.png",
-  "fifa-cards/Marcelo2.png",
-  "fifa-cards/Marcelo3.png"
-];
+  const allCards = [
+    "fifa-cards/vieira1.png",
+    "fifa-cards/vieira2.png",
+    "fifa-cards/vieira3.png",
+    "fifa-cards/marcelo1.png",
+    "fifa-cards/marcelo2.png",
+    "fifa-cards/marcelo3.png"
   ];
 
-  let deck = [...cards].sort(() => Math.random() - 0.5);
-  let selected = null;
+  let deck = [...allCards].sort(() => Math.random() - 0.5);
+  let selectedCard = null;
 
   const packDiv = document.getElementById("pack");
   const teamDiv = document.getElementById("team");
 
-  // Create 11 team slots
+  // create 11 team slots
   for (let i = 0; i < 11; i++) {
     const slot = document.createElement("div");
     slot.className = "slot";
@@ -74,33 +75,35 @@
 
   function dealPack() {
     packDiv.innerHTML = "";
-    deck.splice(0,5).forEach(src => {
+    const pack = deck.splice(0, 5);
+
+    pack.forEach(src => {
       const img = document.createElement("img");
       img.src = src;
-      img.onclick = () => selectCard(img);
+
+      img.onclick = () => {
+        selectedCard = src;
+        [...packDiv.children].forEach(i => i.style.opacity = 1);
+        img.style.opacity = 0.4;
+      };
+
       packDiv.appendChild(img);
     });
   }
 
-  function selectCard(img) {
-    document.querySelectorAll(".pack img").forEach(i => i.classList.remove("selected"));
-    img.classList.add("selected");
-    selected = img.src;
-  }
-
   function placeCard(slot) {
-    if (!selected || slot.innerHTML) return;
-    const img = document.createElement("img");
-    img.src = selected;
-    slot.appendChild(img);
-    selected = null;
+    if (!selectedCard || slot.children.length > 0) return;
 
-    if (packDiv.children.length === 1 && deck.length >= 5) {
+    const img = document.createElement("img");
+    img.src = selectedCard;
+    slot.appendChild(img);
+
+    selectedCard = null;
+
+    if (deck.length >= 5) {
       dealPack();
     } else {
-      [...packDiv.children].forEach(c => {
-        if (c.src === img.src) c.remove();
-      });
+      packDiv.innerHTML = "<p>No more cards</p>";
     }
   }
 
