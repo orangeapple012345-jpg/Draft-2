@@ -1,115 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIFA Draft</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA Draft</title>
 
-  <style>
-    body {
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      user-select: none;
-    }
+<style>
+  body {
+    margin: 0;
+    background: #0b0f1a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
 
-    h2 {
-      margin-top: 20px;
-    }
+  h1 {
+    margin-top: 20px;
+  }
 
-    .pack, .team {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 20px;
-      flex-wrap: wrap;
-    }
+  .pack, .team {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px;
+  }
 
-    img {
-      width: 100px;
-      height: auto;
-      border-radius: 10px;
-      cursor: pointer;
-    }
+  img.card {
+    width: 90px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 
-    .slot {
-      width: 100px;
-      height: 150px;
-      border: 2px dashed #555;
-      border-radius: 10px;
-    }
-  </style>
+  .slot {
+    width: 90px;
+    height: 140px;
+    border: 2px dashed #555;
+    border-radius: 8px;
+  }
+</style>
 </head>
 
 <body>
 
-<h2>PACK</h2>
+<h1>PACK</h1>
 <div class="pack" id="pack"></div>
 
-<h2>TEAM</h2>
+<h1>TEAM</h1>
 <div class="team" id="team"></div>
 
 <script>
-  const allCards = [
-    "fifa-cards/vieira11.png",
-    "fifa-cards/vieira12.png",
-    "fifa-cards/vieira10.png",
-    "fifa-cards/vieira14.png"
-    "fifa-cards/marcelo11.png",
-    "fifa-cards/marcelo12.png",
-    "fifa-cards/marcelo13.png",
-    "fifa-cards/marcelo10.png"
-  ];
+const allCards = [
+  "cards/marcelo10.png",
+  "cards/marcelo11.png",
+  "cards/marcelo12.png",
+  "cards/marcelo13.png",
+  "cards/vieira10.png",
+  "cards/vieira11.png",
+  "cards/vieira12.png",
+  "cards/vieira14.png"
+];
 
-  let deck = [...allCards].sort(() => Math.random() - 0.5);
-  let selectedCard = null;
+// shuffle deck
+let deck = [...allCards].sort(() => Math.random() - 0.5);
+let pack = [];
+let selectedCard = null;
 
-  const packDiv = document.getElementById("pack");
-  const teamDiv = document.getElementById("team");
+const packDiv = document.getElementById("pack");
+const teamDiv = document.getElementById("team");
 
-  // create 11 team slots
-  for (let i = 0; i < 11; i++) {
-    const slot = document.createElement("div");
-    slot.className = "slot";
-    slot.onclick = () => placeCard(slot);
-    teamDiv.appendChild(slot);
-  }
+// create 11 team slots
+for (let i = 0; i < 11; i++) {
+  const slot = document.createElement("div");
+  slot.className = "slot";
+  slot.onclick = () => placeCard(slot);
+  teamDiv.appendChild(slot);
+}
 
-  function dealPack() {
-    packDiv.innerHTML = "";
-    const pack = deck.splice(0, 5);
+function dealPack() {
+  packDiv.innerHTML = "";
+  pack = deck.splice(0, 5);
 
-    pack.forEach(src => {
-      const img = document.createElement("img");
-      img.src = src;
-
-      img.onclick = () => {
-        selectedCard = src;
-        [...packDiv.children].forEach(i => i.style.opacity = 1);
-        img.style.opacity = 0.4;
-      };
-
-      packDiv.appendChild(img);
-    });
-  }
-
-  function placeCard(slot) {
-    if (!selectedCard || slot.children.length > 0) return;
-
+  pack.forEach(src => {
     const img = document.createElement("img");
-    img.src = selectedCard;
-    slot.appendChild(img);
+    img.src = src;
+    img.className = "card";
+    img.onclick = () => selectCard(img);
+    packDiv.appendChild(img);
+  });
+}
 
-    selectedCard = null;
+function selectCard(img) {
+  selectedCard = img.src;
+  document.querySelectorAll(".card").forEach(c => c.style.opacity = 1);
+  img.style.opacity = 0.4;
+}
 
-    if (deck.length >= 5) {
-      dealPack();
-    } else {
-      packDiv.innerHTML = "<p>No more cards</p>";
-    }
+function placeCard(slot) {
+  if (!selectedCard || slot.children.length > 0) return;
+
+  const img = document.createElement("img");
+  img.src = selectedCard;
+  img.className = "card";
+  slot.appendChild(img);
+
+  selectedCard = null;
+
+  if (deck.length >= 5) {
+    dealPack();
+  } else {
+    packDiv.innerHTML = "";
   }
+}
 
-  dealPack();
+dealPack();
 </script>
 
 </body>
